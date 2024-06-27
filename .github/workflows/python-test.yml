@@ -2,7 +2,6 @@ name: Python 🐍 CI/CD tests
 
 on:
   push:
-    branches: [main, develop]
     paths-ignore: # prevents workflow execution when only these types of files are modified
       - "**.md" # wildcards prevent file in any repo dir from trigering workflow
       - "**.bib"
@@ -10,8 +9,7 @@ on:
       - "LICENSE"
       - ".gitignore"
   pull_request:
-    branches: [main, develop]
-    types: [opened, reopened] # excludes syncronize to avoid redundant trigger from commits on PRs
+    branches: [main]
     paths-ignore:
       - "**.md"
       - "**.bib"
@@ -41,7 +39,6 @@ jobs:
       postgres:
         image: postgres
         env:
-          POSTGRES_DB: testdb
           POSTGRES_USER: user
           POSTGRES_PASSWORD: password
         ports:

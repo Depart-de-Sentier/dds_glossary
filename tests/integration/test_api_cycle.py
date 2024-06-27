@@ -1,7 +1,6 @@
 """Integration test for a fresh start scenario."""
 
 from http import HTTPStatus
-from os import getenv as os_getenv
 from pathlib import Path
 from typing import Mapping
 
@@ -9,6 +8,7 @@ from fastapi.testclient import TestClient
 
 from dds_glossary.model import Collection, Concept, ConceptScheme
 from dds_glossary.schema import VersionResponse
+from dds_glossary.settings import get_settings
 
 from .utils import (
     Endpoint,
@@ -28,7 +28,7 @@ def test_api_cycle(
     version_response: VersionResponse,
 ) -> None:
     """Test the API cycle from a fresh start."""
-    api_key = os_getenv("API_KEY", "")
+    api_key = get_settings().API_KEY.get_secret_value()
     lang = "sk"
     invalid_iri = "non_existing"
     responses = setup_fresh_start(

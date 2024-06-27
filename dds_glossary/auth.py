@@ -4,6 +4,7 @@ from http import HTTPStatus
 
 from fastapi import Depends, HTTPException
 from fastapi.security import APIKeyHeader
+from pydantic import ValidationError
 
 from .settings import get_settings
 
@@ -24,10 +25,14 @@ def get_api_key(api_key: str = Depends(api_key_header)) -> dict[str, str]:
         HTTPException: If the API key is missing or invalid. Or if the API key
             environment variable is missing.
     """
-    correct_api_key: str | None = get_settings().API_KEY.get_secret_value()
-    if correct_api_key is None or api_key != correct_api_key:
-        raise HTTPException(
-            status_code=HTTPStatus.FORBIDDEN,
-            detail="Invalid API Key",
-        )
+    error = HTTPException(
+        status_code=HTTPStatus.FORBIDDEN,
+        detail="Invalid API Key",
+    )
+    try:
+        correct_api_key = get_settings().API_KEY.get_secret_value()
+        if api_key != correct_api_key:
+            raise error
+    except ValidationError as ve:
+        raise error from ve
     return {"api_key": api_key}

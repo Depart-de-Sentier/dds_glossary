@@ -1,13 +1,12 @@
 """Database classes for the dds_glossary package."""
 
-from os import getenv as os_getenv
-
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, joinedload, with_polymorphic
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from .model import Base, Collection, Concept, ConceptScheme, Member, SemanticRelation
+from .settings import get_settings
 
 
 def init_engine(
@@ -31,18 +30,16 @@ def init_engine(
         ValueError: If the DATABASE_URL environment variable is not set, in case the
             the `database_url` argument is None.
     """
-    if database_url is None:
-        database_url = os_getenv("DATABASE_URL")
-    if not database_url:
-        raise ValueError("DATABASE_URL environment variable is not set.")
+    database_url = database_url or get_settings().DATABASE_URL.get_secret_value()
     engine = create_engine(database_url)
 
-    if not database_exists(engine.url):
-        create_database(engine.url)
-    elif drop_database_flag:
+    if database_exists(engine.url):
+        if not drop_database_flag:
+            return engine
         drop_database(engine.url)
-        create_database(engine.url)
+        engine.dispose()
 
+    create_database(engine.url)
     Base.metadata.create_all(engine)
     return engine
 
