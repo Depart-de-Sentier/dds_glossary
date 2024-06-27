@@ -118,8 +118,8 @@ class GlossaryController:
         """
         return [member for member in members if member.member_type == member_type]
 
+    @staticmethod
     def parse_dataset(
-        self,
         dataset_path: Path,
     ) -> tuple[
         list[ConceptScheme],

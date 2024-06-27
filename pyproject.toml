@@ -39,6 +39,7 @@ dependencies = [
     "SQLAlchemy>=2.0.0",
     "sqlalchemy-utils",
     "uvicorn[standard]",
+    "neo4j"
 ]
 
 [project.urls]
