@@ -1,7 +1,6 @@
 """Main entry for the dds_glossary server."""
 
 import argparse
-from os import getenv as os_getenv
 
 import sentry_sdk
 import uvicorn
@@ -9,6 +8,7 @@ from fastapi import FastAPI
 from fastapi_versioning import VersionedFastAPI
 
 from .routes import router_non_versioned, router_versioned
+from .settings import get_settings
 
 
 def create_app() -> FastAPI:
@@ -17,7 +17,7 @@ def create_app() -> FastAPI:
         FastAPI: the application object
     """
     sentry_sdk.init(
-        dsn=os_getenv("SENTRY_DSN"),
+        dsn=get_settings().SENTRY_DSN.get_secret_value(),
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
         traces_sample_rate=1.0,
@@ -48,5 +48,5 @@ if __name__ == "__main__":
     uvicorn.run(
         "dds_glossary.main:create_app",
         reload=args.f_reload,
-        host=os_getenv("HOST_IP", "127.0.0.1"),
+        host=get_settings().HOST_IP,
     )

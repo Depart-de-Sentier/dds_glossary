@@ -1,10 +1,11 @@
 """Authentication utils for the dds_glossary package."""
 
 from http import HTTPStatus
-from os import getenv as os_getenv
 
 from fastapi import Depends, HTTPException
 from fastapi.security import APIKeyHeader
+
+from .settings import get_settings
 
 api_key_header = APIKeyHeader(name="X-API-Key")
 
@@ -23,7 +24,7 @@ def get_api_key(api_key: str = Depends(api_key_header)) -> dict[str, str]:
         HTTPException: If the API key is missing or invalid. Or if the API key
             environment variable is missing.
     """
-    correct_api_key: str | None = os_getenv("API_KEY")
+    correct_api_key: str | None = get_settings().API_KEY.get_secret_value()
     if correct_api_key is None or api_key != correct_api_key:
         raise HTTPException(
             status_code=HTTPStatus.FORBIDDEN,

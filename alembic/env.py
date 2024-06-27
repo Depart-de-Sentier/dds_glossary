@@ -1,13 +1,13 @@
 """Alembic environment configuration."""
 
 from logging.config import fileConfig
-from os import getenv as os_getenv
 
 from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
 
 from alembic import context
 from dds_glossary.model import Base
+from dds_glossary.settings import get_settings
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -20,9 +20,9 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
+database_url = get_settings().DATABASE_URL.get_secret_value()
 target_metadata = Base.metadata
-from dds_glossary.database import DATABASE_URL
-config.set_main_option("sqlalchemy.url", DATABASE_URL)
+config.set_main_option("sqlalchemy.url", database_url)
 
 
 # other values from the config, defined by the needs of env.py,

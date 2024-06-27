@@ -34,7 +34,7 @@ dependencies = [
     "lxml",
     "owlready2",
     "psycopg",
-    "python-dotenv",
+    "pydantic_settings~=2.0",
     "sentry-sdk[fastapi]",
     "SQLAlchemy>=2.0.0",
     "sqlalchemy-utils",

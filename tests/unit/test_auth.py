@@ -7,6 +7,7 @@ from pytest import ExceptionInfo, MonkeyPatch
 from pytest import raises as pytest_raises
 
 from dds_glossary.auth import get_api_key
+from dds_glossary.settings import get_settings
 
 
 def _validate_error(exc_info: ExceptionInfo) -> None:
@@ -36,8 +37,7 @@ def test_get_api_key_invalid_key() -> None:
     _validate_error(exc_info)
 
 
-def test_get_api_key_valid_key(monkeypatch: MonkeyPatch) -> None:
+def test_get_api_key_valid_key() -> None:
     """Test the get_api_key function with a valid key."""
-    api_key = "valid"
-    monkeypatch.setenv("API_KEY", api_key)
-    assert get_api_key(api_key="valid") == {"api_key": api_key}
+    api_key = get_settings().API_KEY.get_secret_value()
+    assert get_api_key(api_key=api_key) == {"api_key": api_key}

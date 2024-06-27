@@ -7,6 +7,7 @@ from pytest import MonkeyPatch
 
 from dds_glossary.model import Dataset, FailedDataset
 from dds_glossary.schema import InitDatasetsResponse, VersionResponse
+from dds_glossary.settings import get_settings
 
 
 def test_version(
@@ -53,9 +54,8 @@ def test_init_datasets_valid_key(client: TestClient, monkeypatch: MonkeyPatch) -
             failed_datasets=failed_datasets,
         ),
     )
-    api_key = "valid"
-    monkeypatch.setenv("API_KEY", api_key)
 
+    api_key = get_settings().API_KEY.get_secret_value()
     response = client.post("/latest/init_datasets", headers={"X-API-Key": api_key})
     assert response.status_code == HTTPStatus.OK
     assert response.headers["content-type"] == "application/json"
